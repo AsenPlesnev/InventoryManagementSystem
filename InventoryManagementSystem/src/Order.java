@@ -74,9 +74,9 @@ public class Order {
         sb.append("Order Date: ").append(this.orderDate).append("\n");
         sb.append("Items ordered:\n");
         for (var entry : this.itemsOrdered.entrySet()) {
-            sb.append("  Item ID: ").append(entry.getKey()).append(", Quantity: ").append(entry.getValue()).append("\n");
+            sb.append("  Item ID: ").append(entry.getKey()).append(", Quantity: ").append(entry.getValue());
         }
-        
+
         return sb.toString();
     }
 }

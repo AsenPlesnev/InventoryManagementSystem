@@ -49,7 +49,7 @@ public class Main {
                     break;
                 case 11:
                     isRunning = false;
-                    System.out.println("Exiting....");
+                    System.out.println("Exiting the Inventory Management System.......");
                     System.out.println("Goodbye!");
                     break;
                 default:
