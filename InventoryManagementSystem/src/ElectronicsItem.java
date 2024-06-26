@@ -25,12 +25,6 @@ public class ElectronicsItem extends InventoryItem{
     }
 
     @Override
-    public String toString() {
-        return String.format("ElectronicsItem,%s,%d,%d,%s,%.2f,%s", super.getName(), super.getId(), super.getQuantity(),
-                super.getCategory(), getPrice(), this.getWarranty());
-    }
-
-    @Override
     public void handleBreakage() {
         if (isBreakable()) {
             LocalDate today = LocalDate.now();

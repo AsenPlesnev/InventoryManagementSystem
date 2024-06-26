@@ -31,10 +31,4 @@ public class FragileItem  extends InventoryItem {
             System.out.println(getItemDetails() + " is fragile and has broken.");
         }
     }
-
-    @Override
-    public String toString() {
-        return String.format("FragileItem,%s,%d,%d,%s,%.2f,%.2f", super.getName(), super.getId(), super.getQuantity(),
-                super.getCategory(), super.getPrice(), this.weight);
-    }
 }

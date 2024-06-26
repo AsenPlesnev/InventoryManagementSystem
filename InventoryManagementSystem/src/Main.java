@@ -27,15 +27,18 @@ public class Main {
                     displayItems(inventoryManager);
                     break;
                 case 4:
-                    placeOrder(sc, inventoryManager);
+                    categorizeItems(inventoryManager);
                     break;
                 case 5:
-                    saveInventory(sc, inventoryManager);
+                    placeOrder(sc, inventoryManager);
                     break;
                 case 6:
-                    loadInventory(sc, inventoryManager);
+                    saveInventory(sc, inventoryManager);
                     break;
                 case 7:
+                    loadInventory(sc, inventoryManager);
+                    break;
+                case 8:
                     isRunning = false;
                     System.out.println("Exiting....");
                     System.out.println("Goodbye!");
@@ -50,14 +53,15 @@ public class Main {
 
     public static void displayMenu() {
 
-        System.out.println("Menu [Enter your choice (1 - 7)]:");
+        System.out.println("Menu [Enter your choice (1 - 8)]:");
         System.out.println("1. Add New Item");
         System.out.println("2. Remove Item by ID");
         System.out.println("3. Display List of Items");
-        System.out.println("4. Place Order");
-        System.out.println("5. Save Inventory");
-        System.out.println("6. Load Inventory");
-        System.out.println("7. Exit");
+        System.out.println("4. Categorize Items");
+        System.out.println("5. Place Order");
+        System.out.println("6. Save Inventory");
+        System.out.println("7. Load Inventory");
+        System.out.println("8. Exit");
         System.out.println();
         System.out.println();
     }
@@ -132,8 +136,8 @@ public class Main {
             manager.addItem(newItem);
             System.out.println("Item added successfully.");
             System.out.println();
-        } catch (NumberFormatException | InputMismatchException e) {
-            System.out.println("Invalid input. Please enter valid details.");
+        } catch (IllegalArgumentException | InputMismatchException e) {
+            System.out.println(e.getMessage());
             System.out.println();
         }
     }
@@ -161,6 +165,26 @@ public class Main {
     public static void displayItems(InventoryManager manager) {
         System.out.println("Inventory Items:");
         manager.displayItems();
+        System.out.println();
+    }
+
+    public static void categorizeItems(InventoryManager manager) {
+        if(manager.isEmpty()) {
+            System.out.println("No items in inventory.");
+            System.out.println();
+            return;
+        }
+
+        System.out.println("List of Electronics Items:");
+        manager.displayItemsByCategory("Electronics");
+        System.out.println();
+
+        System.out.println("List of Grocery Items:");
+        manager.displayItemsByCategory("Grocery");
+        System.out.println();
+
+        System.out.println("List of Fragile Items:");
+        manager.displayItemsByCategory("Fragile");
         System.out.println();
     }
 

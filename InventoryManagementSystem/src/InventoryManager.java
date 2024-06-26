@@ -17,9 +17,6 @@ public class InventoryManager {
     }
 
     public void addItem(InventoryItem item) {
-        if (this.inventoryItems.containsKey(item.getId())) {
-            throw new IllegalArgumentException("Item with ID " + item.getId() + " already exists.");
-        }
         this.inventoryItems.put(item.getId(), item);
     }
 
@@ -67,7 +64,9 @@ public class InventoryManager {
             return;
         }
         for (InventoryItem item : itemsByCategory) {
+            System.out.println(item.getItemDetails());
             item.displayDescription();
+            System.out.println();
         }
     }
 
@@ -93,6 +92,8 @@ public class InventoryManager {
 
             item.setQuantity(item.getQuantity() - quantity);
         }
+
+        this.orders.add(order);
 
         System.out.println("Order created successfully with total: " + order.calculateOrderTotal(inventoryItems));
         System.out.println();

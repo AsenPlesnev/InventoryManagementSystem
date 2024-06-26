@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.HashSet;
 
 public class InventoryItem extends AbstractItem {

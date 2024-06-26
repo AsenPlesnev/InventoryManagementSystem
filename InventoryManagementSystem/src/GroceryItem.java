@@ -39,10 +39,4 @@ public class GroceryItem extends InventoryItem {
             System.out.println("Product is still good to use!");
         }
     }
-
-    @Override
-    public String toString() {
-        return String.format("GroceryItem,%s,%d,%d,%s,%.2f,%s", super.getName(), super.getId(), super.getQuantity(),
-                super.getCategory(), super.getPrice(), this.getExpirationDate());
-    }
 }
