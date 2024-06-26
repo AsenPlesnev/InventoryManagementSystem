@@ -76,6 +76,10 @@ public class InventoryManager {
         }
     }
 
+    public boolean areOrdersEmpty() {
+        return this.orders.isEmpty();
+    }
+
     public void createOrder(HashMap<Integer, Integer> itemsToOrder) {
 
         Order order = new Order(nextOrderID++, new Date(), itemsToOrder, null);
@@ -97,6 +101,30 @@ public class InventoryManager {
 
         System.out.println("Order created successfully with total: " + order.calculateOrderTotal(inventoryItems));
         System.out.println();
+    }
+
+    public void removeOrder(int orderId) {
+
+        for (Order order : this.orders) {
+           if (order.getOrderID() == orderId) {
+               this.orders.remove(order);
+
+               //Updated quantities for each item that was in the order
+               for (HashMap.Entry<Integer, Integer> entry : order.getItemsOrdered().entrySet()) {
+                   int itemID = entry.getKey();
+                   int quantity = entry.getValue();
+
+                   InventoryItem item = getItem(itemID);
+
+
+                   item.setQuantity(item.getQuantity() + quantity);
+               }
+
+               return;
+           }
+       }
+
+        throw new NoSuchElementException("Order with ID " + orderId + " doesn't exist!");
     }
 
     //Saving data both to serialized file and CSV file so the user can read the CSV file, and we can deserialize the other

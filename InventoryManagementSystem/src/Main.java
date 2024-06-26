@@ -33,18 +33,21 @@ public class Main {
                     placeOrder(sc, inventoryManager);
                     break;
                 case 6:
-                    saveInventory(sc, inventoryManager);
+                    removeOrder(sc, inventoryManager);
                     break;
                 case 7:
-                    loadInventory(sc, inventoryManager);
+                    saveInventory(sc, inventoryManager);
                     break;
                 case 8:
+                    loadInventory(sc, inventoryManager);
+                    break;
+                case 9:
                     isRunning = false;
                     System.out.println("Exiting....");
                     System.out.println("Goodbye!");
                     break;
                 default:
-                    System.out.println("Invalid command. Please enter a number from 1 to 8.");
+                    System.out.println("Invalid command. Please enter a number from 1 to 9.");
                     System.out.println();
                     break;
             }
@@ -53,16 +56,16 @@ public class Main {
 
     public static void displayMenu() {
 
-        System.out.println("Menu [Enter your choice (1 - 8)]:");
+        System.out.println("Menu [Enter your choice (1 - 9)]:");
         System.out.println("1. Add New Item");
         System.out.println("2. Remove Item by ID");
         System.out.println("3. Display List of Items");
         System.out.println("4. Categorize Items");
         System.out.println("5. Place Order");
-        System.out.println("6. Save Inventory");
-        System.out.println("7. Load Inventory");
-        System.out.println("8. Exit");
-        System.out.println();
+        System.out.println("6. Remove Order");
+        System.out.println("7. Save Inventory");
+        System.out.println("8. Load Inventory");
+        System.out.println("9. Exit");
         System.out.println();
     }
 
@@ -189,6 +192,12 @@ public class Main {
     }
 
     public static void placeOrder(Scanner sc, InventoryManager manager) {
+        if (manager.isEmpty()) {
+            System.out.println("There are no items in the inventory!");
+            System.out.println();
+            return;
+        }
+
         try {
             System.out.println("Enter order details:");
             System.out.print("Number of items to order: ");
@@ -219,6 +228,26 @@ public class Main {
             System.out.println(e.getMessage());
             System.out.println();
         }
+    }
+
+    public static void removeOrder(Scanner sc, InventoryManager manager) {
+        if (manager.areOrdersEmpty()) {
+            System.out.println("There are no orders placed!");
+            System.out.println();
+            return;
+        }
+
+        try {
+            System.out.println("Enter the ID of the order you want to remove:");
+            int orderId = Integer.parseInt(sc.nextLine());
+
+            manager.removeOrder(orderId);
+            System.out.println("Order with ID " + orderId + " is removed successfully!");
+        } catch (NoSuchElementException e) {
+            System.out.println(e.getMessage());
+            System.out.println();
+        }
+
     }
 
     private static void saveInventory(Scanner sc, InventoryManager manager) {
