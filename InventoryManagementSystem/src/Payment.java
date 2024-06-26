@@ -1,3 +1,8 @@
+/**
+ * Class representing a payment.
+ * Contains details about the payment amount and payment method.
+ */
+
 public class Payment {
     private double amount;
     private String paymentMethod;

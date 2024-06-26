@@ -1,6 +1,12 @@
+/**
+ * Class representing a fragile item, extends InventoryItem.
+ * Specific to items categorized as fragile with a weight attribute.
+ */
+
 public class FragileItem  extends InventoryItem {
     private double weight;
 
+    // Default constructor for serialization
     public FragileItem() {
 
     }

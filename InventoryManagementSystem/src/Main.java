@@ -3,6 +3,11 @@ import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+/**
+ * Command-line interface for interacting with the inventory management system.
+ * Provides options to add items, remove items by ID, display a list of items, categorize items, place orders, remove orders, list orders, process orders and save/load inventory.
+ */
+
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -60,6 +65,9 @@ public class Main {
         }
     }
 
+    /**
+     * Displays the main menu options.
+     */
     public static void displayMenu() {
 
         System.out.println("Menu [Enter your choice (1 - 11)]:");
@@ -77,6 +85,7 @@ public class Main {
         System.out.println();
     }
 
+
     public static int getChoice(Scanner sc) {
         int choice;
         try {
@@ -88,6 +97,9 @@ public class Main {
         return choice;
     }
 
+    /**
+     * Prompts the user to add a new item to the inventory.
+     */
     public static void addNewItem(Scanner sc, InventoryManager manager) {
         try {
             System.out.println("Enter item type (Electronics, Grocery, Fragile): ");
@@ -153,6 +165,9 @@ public class Main {
         }
     }
 
+    /**
+     * Prompts the user to remove an item from the inventory by ID.
+     */
     public static void removeItem(Scanner sc, InventoryManager manager) {
         if (manager.checkForItems()) {
             return;
@@ -171,12 +186,18 @@ public class Main {
         }
     }
 
+    /**
+     * Displays all items in the inventory.
+     */
     public static void displayItems(InventoryManager manager) {
         System.out.println("Inventory Items:");
         manager.displayItems();
         System.out.println();
     }
 
+    /**
+     * Displays all items by category in the inventory.
+     */
     public static void categorizeItems(InventoryManager manager) {
         if (manager.checkForItems()) {
             return;
@@ -195,6 +216,9 @@ public class Main {
         System.out.println();
     }
 
+    /**
+     * Prompts the user to place an order.
+     */
     public static void placeOrder(Scanner sc, InventoryManager manager) {
         if (manager.checkForItems()) {
             System.out.println("There are no items in the inventory!");
@@ -234,6 +258,9 @@ public class Main {
         }
     }
 
+    /**
+     * Prompts the user to remove an order.
+     */
     public static void removeOrder(Scanner sc, InventoryManager manager) {
         if (manager.checkForOrders()) {
             return;
@@ -252,6 +279,9 @@ public class Main {
 
     }
 
+    /**
+     * Lists all orders in the inventory.
+     */
     public static void listOrders(InventoryManager manager) {
         if (manager.checkForOrders()) {
             return;
@@ -262,6 +292,9 @@ public class Main {
         System.out.println();
     }
 
+    /**
+     * Prompts the user to process an order.
+     */
     public static void processOrder(Scanner sc, InventoryManager manager) {
         if (manager.checkForOrders()) {
             return;
@@ -292,6 +325,9 @@ public class Main {
         }
     }
 
+    /**
+     * Prompts the user to save the inventory to a file.
+     */
     private static void saveInventory(Scanner sc, InventoryManager manager) {
         try {
             System.out.print("Enter file name to save inventory (e.g., inventory.ser): ");
@@ -305,6 +341,9 @@ public class Main {
         }
     }
 
+    /**
+     * Prompts the user to load the inventory from a file.
+     */
     private static void loadInventory(Scanner sc, InventoryManager manager) {
         try {
             System.out.print("Enter file name to load inventory (e.g., inventory.ser): ");

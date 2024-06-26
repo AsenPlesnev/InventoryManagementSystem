@@ -1,6 +1,11 @@
 import java.io.Serializable;
 
-public class AbstractItem implements Item, Categorizable, Breakable, Perishable, Sellable, Serializable {
+/**
+ * Abstract class that implements Item, Categorizable, Breakable, Perishable, and Sellable interfaces.
+ * Provides common functionality such as getting item details and default implementations for category, breakable, perishable, and sellable attributes.
+ */
+
+public abstract class AbstractItem implements Item, Categorizable, Breakable, Perishable, Sellable, Serializable {
     //This helps maintain compatibility across different versions of the program
     private static final long serialVersionUID = 1L;
     private String name;
@@ -10,10 +15,12 @@ public class AbstractItem implements Item, Categorizable, Breakable, Perishable,
     private boolean perishable;
     private double price;
 
+    // Default constructor for serialization
     public AbstractItem() {
 
     }
 
+    // Constructor to initialize item details
     public AbstractItem(String name, String description, boolean breakable, boolean perishable, double price) {
         this.name = name;
         this.description = description;

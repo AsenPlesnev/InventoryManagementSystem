@@ -1,9 +1,15 @@
 import java.time.LocalDate;
 
+/**
+ * Class representing an electronics item, extends InventoryItem.
+ * Specific to items categorized as electronics.
+ */
+
 public class ElectronicsItem extends InventoryItem{
     //Each electronic item has a warranty presented in Months.
     private LocalDate warranty;
 
+    // Default constructor for serialization
     public ElectronicsItem() {
 
     }

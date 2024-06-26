@@ -1,6 +1,11 @@
 import java.util.Date;
 import java.util.HashMap;
 
+/**
+ * Class representing an order.
+ * Contains details about the order ID, date, items to order and the associated payment.
+ */
+
 public class Order {
     private int orderID;
     private Date orderDate;

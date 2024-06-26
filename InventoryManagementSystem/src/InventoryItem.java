@@ -1,5 +1,9 @@
-import java.io.Serializable;
 import java.util.HashSet;
+
+/**
+ * Class representing an inventory item, extends AbstractItem.
+ * Adds instance variables for item ID and quantity.
+ */
 
 public class InventoryItem extends AbstractItem {
     //Static collection to keep all Ids from all instances that are in use so there won't be any duplicate IDs.
@@ -7,10 +11,12 @@ public class InventoryItem extends AbstractItem {
     private int id;
     private int quantity;
 
+    // Default constructor for serialization
     public InventoryItem() {
 
     }
 
+    // Constructor to initialize item details, including ID and quantity
     public InventoryItem(String name, int id, int quantity, String description, boolean breakable,
                          boolean perishable, double price) {
         super(name, description, breakable, perishable, price);

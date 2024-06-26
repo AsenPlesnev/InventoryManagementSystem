@@ -1,8 +1,14 @@
 import java.time.LocalDate;
 
+/**
+ * Class representing a grocery item, extends InventoryItem.
+ * Specific to items categorized as groceries with an expiration date.
+ */
+
 public class GroceryItem extends InventoryItem {
     private LocalDate expirationDate;
 
+    // Default constructor for serialization
     public GroceryItem() {
 
     }
