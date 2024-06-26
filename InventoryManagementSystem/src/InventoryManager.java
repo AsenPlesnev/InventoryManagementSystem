@@ -23,6 +23,10 @@ public class InventoryManager {
         this.inventoryItems.put(item.getId(), item);
     }
 
+    public boolean isEmpty() {
+        return this.inventoryItems.isEmpty();
+    }
+
     public void removeItem(int itemID) {
         if (!this.inventoryItems.containsKey(itemID)) {
             throw new NoSuchElementException("Item with ID " + itemID + " not found.");
@@ -73,45 +77,28 @@ public class InventoryManager {
         }
     }
 
-    public void createOrder(HashMap<Integer, Integer> itemsToOrder, Payment payment) {
-        if (payment == null) {
-            throw new IllegalArgumentException("Payment cannot be null.");
-        }
+    public void createOrder(HashMap<Integer, Integer> itemsToOrder) {
 
-        Order order = new Order(nextOrderID++, new Date(), itemsToOrder, payment);
+        Order order = new Order(nextOrderID++, new Date(), itemsToOrder, null);
 
-        double total = 0.0;
         for (HashMap.Entry<Integer, Integer> entry : itemsToOrder.entrySet()) {
             int itemID = entry.getKey();
             int quantity = entry.getValue();
 
             InventoryItem item = getItem(itemID);
-            if (item != null) {
-                if (item.getQuantity() < quantity) {
-                    throw new IllegalArgumentException("Not enough stock for item: " + itemID);
-                }
-                total += item.getPrice() * quantity;
-            } else {
-                throw new IllegalArgumentException("Item not found: " + itemID);
+
+            if (item.getQuantity() < quantity) {
+                throw new IllegalArgumentException("Not enough stock for item with ID " + itemID);
             }
-        }
 
-        if (payment.getAmount() < total) {
-            throw new IllegalArgumentException("Insufficient payment.");
-        }
-
-        for (HashMap.Entry<Integer, Integer> entry : itemsToOrder.entrySet()) {
-            int itemID = entry.getKey();
-            int quantity = entry.getValue();
-
-            InventoryItem item = getItem(itemID);
             item.setQuantity(item.getQuantity() - quantity);
         }
 
-        System.out.println("Order created successfully with total: " + total);
+        System.out.println("Order created successfully with total: " + order.calculateOrderTotal(inventoryItems));
+        System.out.println();
     }
 
-    //Saving data both to serialized file and CSV file so the user can read the CSV file and we can deserialize the other
+    //Saving data both to serialized file and CSV file so the user can read the CSV file, and we can deserialize the other
     //file for easier loading.
     public void saveInventory(String filename) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {

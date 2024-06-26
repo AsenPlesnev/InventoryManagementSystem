@@ -40,10 +40,9 @@ public class Order {
         for (var entry : this.itemsOrdered.entrySet()) {
             int itemID = entry.getKey();
             int quantity = entry.getValue();
-            if (inventory.containsKey(itemID)) {
-                InventoryItem item = inventory.get(itemID);
-                total += item.calculateValue(quantity);
-            }
+
+            InventoryItem item = inventory.get(itemID);
+            total += item.calculateValue(quantity);
         }
         return total;
     }
