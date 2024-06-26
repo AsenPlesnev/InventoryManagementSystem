@@ -39,18 +39,21 @@ public class Main {
                     listOrders(inventoryManager);
                     break;
                 case 8:
-                    saveInventory(sc, inventoryManager);
+                    processOrder(sc, inventoryManager);
                     break;
                 case 9:
-                    loadInventory(sc, inventoryManager);
+                    saveInventory(sc, inventoryManager);
                     break;
                 case 10:
+                    loadInventory(sc, inventoryManager);
+                    break;
+                case 11:
                     isRunning = false;
                     System.out.println("Exiting....");
                     System.out.println("Goodbye!");
                     break;
                 default:
-                    System.out.println("Invalid command. Please enter a number from 1 to 9.");
+                    System.out.println("Invalid command. Please enter a number from 1 to 11.");
                     System.out.println();
                     break;
             }
@@ -151,13 +154,11 @@ public class Main {
     }
 
     public static void removeItem(Scanner sc, InventoryManager manager) {
-        try {
-            if (manager.isEmpty()) {
-                System.out.println("No items in inventory.");
-                System.out.println();
-                return;
-            }
+        if (manager.checkForItems()) {
+            return;
+        }
 
+        try {
             System.out.print("Enter Item ID to remove: ");
             int itemID = Integer.parseInt(sc.nextLine());
 
@@ -177,9 +178,7 @@ public class Main {
     }
 
     public static void categorizeItems(InventoryManager manager) {
-        if(manager.isEmpty()) {
-            System.out.println("No items in inventory.");
-            System.out.println();
+        if (manager.checkForItems()) {
             return;
         }
 
@@ -197,7 +196,7 @@ public class Main {
     }
 
     public static void placeOrder(Scanner sc, InventoryManager manager) {
-        if (manager.isEmpty()) {
+        if (manager.checkForItems()) {
             System.out.println("There are no items in the inventory!");
             System.out.println();
             return;
@@ -236,9 +235,7 @@ public class Main {
     }
 
     public static void removeOrder(Scanner sc, InventoryManager manager) {
-        if (manager.areOrdersEmpty()) {
-            System.out.println("There are no orders placed!");
-            System.out.println();
+        if (manager.checkForOrders()) {
             return;
         }
 
@@ -256,9 +253,43 @@ public class Main {
     }
 
     public static void listOrders(InventoryManager manager) {
+        if (manager.checkForOrders()) {
+            return;
+        }
+
         System.out.println("List Of Orders:");
         manager.displayOrders();
         System.out.println();
+    }
+
+    public static void processOrder(Scanner sc, InventoryManager manager) {
+        if (manager.checkForOrders()) {
+            return;
+        }
+
+        try {
+            System.out.println("Enter the ID of the order you want to process:");
+            int orderId = Integer.parseInt(sc.nextLine());
+
+            System.out.println("Enter payment amount: ");
+            double amount = Double.parseDouble(sc.nextLine());
+
+            if (amount <= 0) {
+                System.out.println("Payment amount must be greater than 0!");
+                System.out.println();
+                return;
+            }
+
+            System.out.println("Enter payment method: ");
+            String method = sc.nextLine();
+
+            Payment payment = new Payment(amount, method);
+
+            manager.processOrder(orderId, payment);
+        } catch (NoSuchElementException | IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            System.out.println();
+        }
     }
 
     private static void saveInventory(Scanner sc, InventoryManager manager) {

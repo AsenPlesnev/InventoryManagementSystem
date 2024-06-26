@@ -20,8 +20,14 @@ public class InventoryManager {
         this.inventoryItems.put(item.getId(), item);
     }
 
-    public boolean isEmpty() {
-        return this.inventoryItems.isEmpty();
+    public boolean checkForItems() {
+        if (this.inventoryItems.isEmpty()) {
+            System.out.println("No items in inventory.");
+            System.out.println();
+            return true;
+        }
+
+        return false;
     }
 
     public void removeItem(int itemID) {
@@ -38,6 +44,7 @@ public class InventoryManager {
     public void displayItems() {
         if (this.inventoryItems.isEmpty()) {
             System.out.println("No items in inventory.");
+            System.out.println();
             return;
         }
         for (InventoryItem item : this.inventoryItems.values()) {
@@ -70,6 +77,16 @@ public class InventoryManager {
         }
     }
 
+    public Order getOrderById(int id) {
+        for (Order order : this.orders) {
+            if (order.getOrderID() == id) {
+                return order;
+            }
+        }
+
+        return null;
+    }
+
     public void displayOrders() {
         for (Order order : this.orders) {
             System.out.println(order);
@@ -77,8 +94,14 @@ public class InventoryManager {
         }
     }
 
-    public boolean areOrdersEmpty() {
-        return this.orders.isEmpty();
+    public boolean checkForOrders() {
+        if (this.orders.isEmpty()) {
+            System.out.println("There are no orders placed!");
+            System.out.println();
+            return true;
+        }
+
+        return false;
     }
 
     public void createOrder(HashMap<Integer, Integer> itemsToOrder) {
@@ -105,27 +128,46 @@ public class InventoryManager {
     }
 
     public void removeOrder(int orderId) {
+        Order orderToRemove = getOrderById(orderId);
 
-        for (Order order : this.orders) {
-           if (order.getOrderID() == orderId) {
-               this.orders.remove(order);
+        if (orderToRemove != null) {
+            this.orders.remove(orderToRemove);
 
-               //Updated quantities for each item that was in the order
-               for (HashMap.Entry<Integer, Integer> entry : order.getItemsOrdered().entrySet()) {
-                   int itemID = entry.getKey();
-                   int quantity = entry.getValue();
+            //Updated quantities for each item that was in the order
+            for (HashMap.Entry<Integer, Integer> entry : orderToRemove.getItemsOrdered().entrySet()) {
+                int itemID = entry.getKey();
+                int quantity = entry.getValue();
 
-                   InventoryItem item = getItem(itemID);
+                InventoryItem item = getItem(itemID);
 
-
-                   item.setQuantity(item.getQuantity() + quantity);
-               }
-
-               return;
-           }
-       }
+                item.setQuantity(item.getQuantity() + quantity);
+            }
+            return;
+        }
 
         throw new NoSuchElementException("Order with ID " + orderId + " doesn't exist!");
+    }
+
+    public void processOrder(int orderId, Payment payment) {
+        if (payment == null) {
+            throw new IllegalArgumentException("Order can't be processed without a payment!");
+        }
+        Order order = getOrderById(orderId);
+
+        if (order == null) {
+            throw new NoSuchElementException("Order with ID " + orderId + " doesn't exist!");
+        }
+
+        double total = order.calculateOrderTotal(inventoryItems);
+
+        if (payment.getAmount() < total) {
+            throw new IllegalArgumentException("Insufficient payment. The total of the order is " + total + " and payment amount is " + payment.getAmount());
+        }
+
+        System.out.println("Order with ID " + orderId + " and total: " + total + " was successfully processed and paid by " + payment.getPaymentMethod());
+        System.out.println();
+
+        orders.remove(order);
     }
 
     //Saving data both to serialized file and CSV file so the user can read the CSV file, and we can deserialize the other
