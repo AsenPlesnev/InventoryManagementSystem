@@ -1,6 +1,6 @@
 public interface Item {
     String getName();
     String getItemDetails();
-    double calculateValue();
+    double calculateValue(int quantity);
     void displayDescription();
 }

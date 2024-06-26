@@ -18,8 +18,8 @@ public class GroceryItem extends InventoryItem {
     }
 
     @Override
-    public double calculateValue() {
-        return getPrice() * getQuantity() * 0.9; // 10% discount for groceries.
+    public double calculateValue(int quantity) {
+        return getPrice() * quantity * 0.9; // 10% discount for groceries.
     }
 
     @Override

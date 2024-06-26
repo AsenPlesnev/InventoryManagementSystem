@@ -16,8 +16,8 @@ public class FragileItem  extends InventoryItem {
     }
 
     @Override
-    public double calculateValue() {
-        return getPrice() * getQuantity() + 5 * this.weight; // Adding extra cost based on weight
+    public double calculateValue(int quantity) {
+        return getPrice() * quantity + 5 * this.weight; // Adding extra cost based on weight
     }
 
     @Override

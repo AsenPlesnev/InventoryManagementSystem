@@ -59,8 +59,8 @@ public class InventoryItem extends AbstractItem {
     }
 
     @Override
-    public double calculateValue() {
-        return getPrice() * getQuantity();
+    public double calculateValue(int quantity) {
+        return getPrice() * quantity;
     }
 
     //Adding the new properties to the details

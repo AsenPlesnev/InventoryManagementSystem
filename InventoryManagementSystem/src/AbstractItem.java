@@ -32,8 +32,8 @@ public class AbstractItem implements Item, Categorizable, Breakable, Perishable,
     }
 
     @Override
-    public double calculateValue() {
-        return this.price;
+    public double calculateValue(int quantity) {
+        return this.price * quantity;
     }
 
     @Override
