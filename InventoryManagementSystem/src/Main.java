@@ -36,12 +36,15 @@ public class Main {
                     removeOrder(sc, inventoryManager);
                     break;
                 case 7:
-                    saveInventory(sc, inventoryManager);
+                    listOrders(inventoryManager);
                     break;
                 case 8:
-                    loadInventory(sc, inventoryManager);
+                    saveInventory(sc, inventoryManager);
                     break;
                 case 9:
+                    loadInventory(sc, inventoryManager);
+                    break;
+                case 10:
                     isRunning = false;
                     System.out.println("Exiting....");
                     System.out.println("Goodbye!");
@@ -56,16 +59,18 @@ public class Main {
 
     public static void displayMenu() {
 
-        System.out.println("Menu [Enter your choice (1 - 9)]:");
+        System.out.println("Menu [Enter your choice (1 - 11)]:");
         System.out.println("1. Add New Item");
         System.out.println("2. Remove Item by ID");
         System.out.println("3. Display List of Items");
         System.out.println("4. Categorize Items");
         System.out.println("5. Place Order");
         System.out.println("6. Remove Order");
-        System.out.println("7. Save Inventory");
-        System.out.println("8. Load Inventory");
-        System.out.println("9. Exit");
+        System.out.println("7. List Orders");
+        System.out.println("8. Process Payment and Complete Order");
+        System.out.println("9. Save Inventory");
+        System.out.println("10. Load Inventory");
+        System.out.println("11. Exit");
         System.out.println();
     }
 
@@ -248,6 +253,12 @@ public class Main {
             System.out.println();
         }
 
+    }
+
+    public static void listOrders(InventoryManager manager) {
+        System.out.println("List Of Orders:");
+        manager.displayOrders();
+        System.out.println();
     }
 
     private static void saveInventory(Scanner sc, InventoryManager manager) {

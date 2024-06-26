@@ -76,7 +76,7 @@ public class Order {
         for (var entry : this.itemsOrdered.entrySet()) {
             sb.append("  Item ID: ").append(entry.getKey()).append(", Quantity: ").append(entry.getValue()).append("\n");
         }
-        sb.append("Payment details: ").append(this.payment).append("\n");
+        
         return sb.toString();
     }
 }

@@ -73,6 +73,7 @@ public class InventoryManager {
     public void displayOrders() {
         for (Order order : this.orders) {
             System.out.println(order);
+            System.out.println();
         }
     }
 
