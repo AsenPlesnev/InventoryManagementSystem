@@ -37,39 +37,48 @@ public class Main {
                     categorizeItems(inventoryManager);
                     break;
                 case 5:
-                    placeOrder(sc, inventoryManager);
+                    addItemToCart(sc, inventoryManager);
                     break;
                 case 6:
-                    removeOrder(sc, inventoryManager);
+                    removeItemFromCart(sc, inventoryManager);
                     break;
                 case 7:
-                    listOrders(inventoryManager);
+                    showCart(inventoryManager);
                     break;
                 case 8:
-                    addPaymentMethod(sc, paymentProcessor);
+                    placeOrder(sc, inventoryManager);
                     break;
                 case 9:
-                    removePaymentMethod(sc, paymentProcessor);
+                    removeOrder(sc, inventoryManager);
                     break;
                 case 10:
-                    listPaymentMethods(paymentProcessor);
+                    listOrders(inventoryManager);
                     break;
                 case 11:
-                    processOrder(sc, inventoryManager, paymentProcessor);
+                    addPaymentMethod(sc, paymentProcessor);
                     break;
                 case 12:
-                    saveInventory(sc, inventoryManager);
+                    removePaymentMethod(sc, paymentProcessor);
                     break;
                 case 13:
-                    loadInventory(sc, inventoryManager);
+                    listPaymentMethods(paymentProcessor);
                     break;
                 case 14:
+                    processOrder(sc, inventoryManager, paymentProcessor);
+                    break;
+                case 15:
+                    saveInventory(sc, inventoryManager);
+                    break;
+                case 16:
+                    loadInventory(sc, inventoryManager);
+                    break;
+                case 17:
                     isRunning = false;
                     System.out.println("Exiting the Inventory Management System.......");
                     System.out.println("Goodbye!");
                     break;
                 default:
-                    System.out.println("Invalid command. Please enter a number from 1 to 14.");
+                    System.out.println("Invalid command. Please enter a number from 1 to 17.");
                     System.out.println();
                     break;
             }
@@ -81,21 +90,24 @@ public class Main {
      */
     public static void displayMenu() {
 
-        System.out.println("Menu [Enter your choice (1 - 14)]:");
+        System.out.println("Menu [Enter your choice (1 - 17)]:");
         System.out.println("1. Add New Item");
         System.out.println("2. Remove Item by ID");
         System.out.println("3. Display List of Items");
         System.out.println("4. Categorize Items");
-        System.out.println("5. Place Order");
-        System.out.println("6. Remove Order");
-        System.out.println("7. List Orders");
-        System.out.println("8. Add Payment Method");
-        System.out.println("9. Remove Payment Method");
-        System.out.println("10. List Payment Methods");
-        System.out.println("11. Process Payment and Complete Order");
-        System.out.println("12. Save Inventory");
-        System.out.println("13. Load Inventory");
-        System.out.println("14. Exit");
+        System.out.println("5. Add Item to Cart");
+        System.out.println("6. Remove Item from Cart");
+        System.out.println("7. View Cart");
+        System.out.println("8. Place Order");
+        System.out.println("9. Remove Order");
+        System.out.println("10. List Orders");
+        System.out.println("11. Add Payment Method");
+        System.out.println("12. Remove Payment Method");
+        System.out.println("13. List Payment Methods");
+        System.out.println("14. Process Payment and Complete Order");
+        System.out.println("15. Save Inventory");
+        System.out.println("16. Load Inventory");
+        System.out.println("17. Exit");
         System.out.println();
     }
 
@@ -231,6 +243,55 @@ public class Main {
     }
 
     /**
+     * Prompts user to add an item to the shopping cart.
+     */
+    public static void addItemToCart(Scanner sc, InventoryManager manager) {
+        try {
+            System.out.print("Enter Item ID: ");
+            int itemID = Integer.parseInt(sc.nextLine());
+
+            System.out.print("Enter quantity for item: ");
+            int quantity = Integer.parseInt(sc.nextLine());
+
+            if (quantity <= 0) {
+                System.out.println("Item quantity must be at least 1!");
+                System.out.println();
+                return;
+            }
+
+            manager.addItemToCart(itemID, quantity);
+
+            System.out.println("Item ID " + itemID + " with quantity " + quantity + " successfully added to the cart!");
+            System.out.println();
+        } catch (NoSuchElementException | IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            System.out.println();
+        }
+    }
+
+    /**
+     * Prompts user to remove an item from the shopping cart.
+     */
+    public static void removeItemFromCart(Scanner sc, InventoryManager manager) {
+        try {
+            System.out.print("Enter Item ID: ");
+            int itemID = Integer.parseInt(sc.nextLine());
+
+            manager.removeItemFromCart(itemID);
+        } catch(NoSuchElementException e) {
+            System.out.println(e.getMessage());
+            System.out.println();
+        }
+    }
+
+    /**
+     * Displays all items in the shopping cart.
+     */
+    public static void showCart(InventoryManager manager) {
+        manager.displayCart();
+    }
+
+    /**
      * Prompts the user to place an order.
      */
     public static void placeOrder(Scanner sc, InventoryManager manager) {
@@ -241,30 +302,8 @@ public class Main {
         }
 
         try {
-            System.out.println("Enter order details:");
-            System.out.print("Number of items to order: ");
-            int itemCount = Integer.parseInt(sc.nextLine());
-
-            HashMap<Integer, Integer> itemsToOrder = new HashMap<>();
-            for (int i = 0; i < itemCount; i++) {
-                System.out.print("Enter Item ID for item " + (i + 1) + ": ");
-                int itemID = Integer.parseInt(sc.nextLine());
-
-                // Check if item exists
-                if (manager.getItem(itemID) == null) {
-                    System.out.println("Item with ID " + itemID + " not found.");
-                    System.out.println();
-                    return;
-                }
-
-                System.out.print("Enter quantity for item " + (i + 1) + ": ");
-                int quantity = Integer.parseInt(sc.nextLine());
-
-                itemsToOrder.put(itemID, quantity);
-            }
-
             // Create order and add to system
-            manager.createOrder(itemsToOrder);
+            manager.createOrder();
         } catch (IllegalArgumentException | InputMismatchException e) {
             System.out.println("Invalid input. Please enter valid details.");
             System.out.println(e.getMessage());

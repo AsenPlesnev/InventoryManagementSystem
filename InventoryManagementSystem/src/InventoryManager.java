@@ -16,16 +16,23 @@ public class InventoryManager {
     //Collection to keep all items like itemID -> InventoryItem
     private HashMap<Integer, InventoryItem> inventoryItems;
     private ArrayList<Order> orders;
+    private ShoppingCart shoppingCart;
     private int nextOrderID;
 
     public InventoryManager() {
         this.inventoryItems = new HashMap<>();
         this.orders = new ArrayList<>();
+        this.shoppingCart = new ShoppingCart();
         nextOrderID = 1;
+    }
+
+    public ShoppingCart getCart() {
+        return this.shoppingCart;
     }
 
     /**
      * Adds an item to the inventory.
+     *
      * @param item The item to add.
      */
     public void addItem(InventoryItem item) {
@@ -35,6 +42,7 @@ public class InventoryManager {
     /**
      * Checks if there are any items in the inventory.
      * If there aren't outputs a message to the console.
+     *
      * @return Returns true if there are no items and false if there are.
      */
 
@@ -50,6 +58,7 @@ public class InventoryManager {
 
     /**
      * Removes an item from the inventory by ID.
+     *
      * @param itemID The ID of the item to remove.
      * @throws NoSuchElementException If the item with the given ID doesn't exist.
      */
@@ -62,6 +71,7 @@ public class InventoryManager {
 
     /**
      * Gets an item from the inventory by ID.
+     *
      * @param itemID The ID of the item to get.
      * @return The item with the specified ID, or null if not found.
      */
@@ -87,6 +97,7 @@ public class InventoryManager {
 
     /**
      * Get all items from a specific Category.
+     *
      * @param category the category we want to check for.
      * @return ArrayList of InventoryItem items which are from the given category.
      */
@@ -102,6 +113,7 @@ public class InventoryManager {
 
     /**
      * Displays all items from a category.
+     *
      * @param category the category we want to check for.
      */
     public void displayItemsByCategory(String category) {
@@ -119,6 +131,7 @@ public class InventoryManager {
 
     /**
      * Search for an order by ID in the collection of Orders.
+     *
      * @param id the ID of the order we want to check for.
      * @return The order with the specified ID, or null if not found.
      */
@@ -146,6 +159,7 @@ public class InventoryManager {
     /**
      * Checks if we have any orders in the system.
      * If there aren't outputs a message to the console.
+     *
      * @return Returns true if there are no orders and false if there are.
      */
 
@@ -160,30 +174,92 @@ public class InventoryManager {
     }
 
     /**
+     * Adds an item to the shopping cart.
+     * @param itemID The id of the item
+     * @param quantity The quantity of the item.
+     * @throws NoSuchElementException If the ID is invalid.
+     * @throws IllegalArgumentException If the quantity is more than the actual item's quantity.
+     */
+    public void addItemToCart(int itemID, int quantity) {
+        InventoryItem item = this.getItem(itemID);
+
+        if (item == null) {
+            throw new NoSuchElementException("Item with ID " + itemID + " is not in the cart.");
+        }
+
+        if (quantity > item.getQuantity()) {
+            throw new IllegalArgumentException("Not enough stock for item with ID " + itemID);
+        }
+
+        this.shoppingCart.addItem(itemID, quantity);
+    }
+
+    /**
+     * Removes an item from the shopping cart.
+     * @param itemID The id of the item
+     * @throws NoSuchElementException If the ID is invalid.
+     */
+    public void removeItemFromCart(int itemID) {
+        if (this.shoppingCart.isEmpty()) {
+            System.out.println("No items in the shopping cart!");
+            System.out.println();
+            return;
+        }
+
+        InventoryItem item = this.getItem(itemID);
+
+        if (item == null) {
+            throw new NoSuchElementException("Item with ID " + itemID + " is not found.");
+        }
+
+        this.shoppingCart.removeItem(itemID);
+    }
+
+    /**
+     * Displays all items from the shopping cart.
+     */
+    public void displayCart() {
+        this.shoppingCart.viewCart();
+    }
+
+    /**
      * Creates an order with the specified items and quantities.
      * Updates the inventory quantities after the order is placed.
      * Adds the order to the list of orders.
+     *
+     * @throws NoSuchElementException If the ID is invalid.
      * @throws IllegalArgumentException if any of the item's quantity is less than the quantity given in the order.
-     * @param itemsToOrder The items to order, mapped by item ID to quantity.
      */
-    public void createOrder(HashMap<Integer, Integer> itemsToOrder) {
+    public void createOrder() {
 
-        Order order = new Order(nextOrderID++, new Date(), itemsToOrder);
-
-        for (HashMap.Entry<Integer, Integer> entry : itemsToOrder.entrySet()) {
-            int itemID = entry.getKey();
-            int quantity = entry.getValue();
-
-            InventoryItem item = getItem(itemID);
-
-            if (item.getQuantity() < quantity) {
-                throw new IllegalArgumentException("Not enough stock for item with ID " + itemID);
-            }
-
-            item.setQuantity(item.getQuantity() - quantity);
+        if (this.shoppingCart.isEmpty()) {
+            System.out.println("Shopping cart is empty! First add some items!");
+            System.out.println();
+            return;
         }
 
+        HashMap<Integer, Integer> itemsToOrder = this.shoppingCart.getItems();
+
+        for (var entry : itemsToOrder.entrySet()) {
+            InventoryItem item = getItem(entry.getKey());
+            int orderQuantity = entry.getValue();
+
+            if (item == null) {
+                throw new NoSuchElementException("Item with ID " + entry.getKey() + " not found.");
+            }
+
+            if (item.getQuantity() >= orderQuantity) {
+                item.setQuantity(item.getQuantity() - orderQuantity);
+            } else {
+                System.out.println("Error: Not enough stock for item ID " + entry.getKey());
+                return;
+            }
+        }
+
+
+        Order order = new Order(nextOrderID++, new Date(), itemsToOrder);
         this.orders.add(order);
+        this.shoppingCart.clearCart();
 
         System.out.println("Order created successfully with total: " + order.calculateOrderTotal(inventoryItems));
         System.out.println();
@@ -193,8 +269,9 @@ public class InventoryManager {
      * Removes an order with the specified ID.
      * Updates the inventory quantities after the order is removed.
      * Removes the order from the list of orders.
-     * @throws NoSuchElementException it there isn't an order with the provided ID.
+     *
      * @param orderId The ID of the order we want to remove.
+     * @throws NoSuchElementException it there isn't an order with the provided ID.
      */
     public void removeOrder(int orderId) {
         Order orderToRemove = getOrderById(orderId);
@@ -219,10 +296,11 @@ public class InventoryManager {
 
     /**
      * Process an order with the specified ID.
-     * @throws IllegalArgumentException if the payment is null or insufficient.
-     * @throws NoSuchElementException it there isn't an order with the provided ID.
-     * Removes the order from the list of orders.
+     *
      * @param orderId The ID of the order we want to process.
+     * @throws IllegalArgumentException if the payment is null or insufficient.
+     * @throws NoSuchElementException   it there isn't an order with the provided ID.
+     *                                  Removes the order from the list of orders.
      */
     public void processOrder(int orderId, double paymentAmount) {
         Order order = getOrderById(orderId);
@@ -242,6 +320,7 @@ public class InventoryManager {
     /**
      * Saves the inventory data to a file using ObjectOutputStream for serialization.
      * Also saves the inventory data in CSV format for readability.
+     *
      * @param filename The name of the file to save the inventory data to.
      * @throws IOException If an I/O error occurs while saving the inventory data.
      */
@@ -260,8 +339,9 @@ public class InventoryManager {
 
     /**
      * Loads the inventory data from a file using ObjectInputStream for deserialization.
+     *
      * @param filename The name of the file to load the inventory data from.
-     * @throws IOException If an I/O error occurs while loading the inventory data.
+     * @throws IOException            If an I/O error occurs while loading the inventory data.
      * @throws ClassNotFoundException If the class of a serialized object cannot be found.
      */
     public void loadInventory(String filename) throws IOException, ClassNotFoundException {
