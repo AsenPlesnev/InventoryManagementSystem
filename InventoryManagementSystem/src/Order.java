@@ -11,13 +11,11 @@ public class Order {
     private Date orderDate;
     //We will store the itemId -> quantity for each ordered item
     private HashMap<Integer, Integer> itemsOrdered;
-    private Payment payment;
 
-    public Order(int orderID, Date orderDate, HashMap<Integer, Integer> itemsToOrder, Payment payment) {
+    public Order(int orderID, Date orderDate, HashMap<Integer, Integer> itemsToOrder) {
         this.orderID = orderID;
         this.orderDate = orderDate;
         this.itemsOrdered = itemsToOrder;
-        this.payment = payment;
     }
 
     public int getOrderID() {
@@ -36,10 +34,6 @@ public class Order {
         return this.itemsOrdered;
     }
 
-    public Payment getPayment() {
-        return this.payment;
-    }
-
     public double calculateOrderTotal(HashMap<Integer, InventoryItem> inventory) {
         double total = 0.0;
         for (var entry : this.itemsOrdered.entrySet()) {
@@ -53,10 +47,6 @@ public class Order {
     }
 
     public void processOrder(HashMap<Integer, InventoryItem> inventory) {
-        if (this.payment == null) {
-            System.out.println("Order can't be processed without a payment. First add a payment!");
-            return;
-        }
 
         // Update inventory quantities
         for (var entry : this.itemsOrdered.entrySet()) {

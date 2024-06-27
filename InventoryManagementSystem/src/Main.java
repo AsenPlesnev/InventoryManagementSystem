@@ -1,3 +1,4 @@
+import java.sql.SQLOutput;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
@@ -12,6 +13,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         InventoryManager inventoryManager = new InventoryManager();
+        PaymentProcessor paymentProcessor = new PaymentProcessor();
 
         System.out.println("Welcome to the Inventory Management System");
 
@@ -44,21 +46,30 @@ public class Main {
                     listOrders(inventoryManager);
                     break;
                 case 8:
-                    processOrder(sc, inventoryManager);
+                    addPaymentMethod(sc, paymentProcessor);
                     break;
                 case 9:
-                    saveInventory(sc, inventoryManager);
+                    removePaymentMethod(sc, paymentProcessor);
                     break;
                 case 10:
-                    loadInventory(sc, inventoryManager);
+                    listPaymentMethods(paymentProcessor);
                     break;
                 case 11:
+                    processOrder(sc, inventoryManager, paymentProcessor);
+                    break;
+                case 12:
+                    saveInventory(sc, inventoryManager);
+                    break;
+                case 13:
+                    loadInventory(sc, inventoryManager);
+                    break;
+                case 14:
                     isRunning = false;
                     System.out.println("Exiting the Inventory Management System.......");
                     System.out.println("Goodbye!");
                     break;
                 default:
-                    System.out.println("Invalid command. Please enter a number from 1 to 11.");
+                    System.out.println("Invalid command. Please enter a number from 1 to 14.");
                     System.out.println();
                     break;
             }
@@ -70,7 +81,7 @@ public class Main {
      */
     public static void displayMenu() {
 
-        System.out.println("Menu [Enter your choice (1 - 11)]:");
+        System.out.println("Menu [Enter your choice (1 - 14)]:");
         System.out.println("1. Add New Item");
         System.out.println("2. Remove Item by ID");
         System.out.println("3. Display List of Items");
@@ -78,10 +89,13 @@ public class Main {
         System.out.println("5. Place Order");
         System.out.println("6. Remove Order");
         System.out.println("7. List Orders");
-        System.out.println("8. Process Payment and Complete Order");
-        System.out.println("9. Save Inventory");
-        System.out.println("10. Load Inventory");
-        System.out.println("11. Exit");
+        System.out.println("8. Add Payment Method");
+        System.out.println("9. Remove Payment Method");
+        System.out.println("10. List Payment Methods");
+        System.out.println("11. Process Payment and Complete Order");
+        System.out.println("12. Save Inventory");
+        System.out.println("13. Load Inventory");
+        System.out.println("14. Exit");
         System.out.println();
     }
 
@@ -293,16 +307,122 @@ public class Main {
     }
 
     /**
+     * Prompts the user to add a new payment method to the payment processor.
+     */
+    public static void addPaymentMethod(Scanner sc, PaymentProcessor processor) {
+        System.out.println("Enter payment type (Credit Card or PayPal): ");
+        String paymentType = sc.nextLine().trim().toLowerCase();
+
+        switch (paymentType) {
+            case "credit card":
+                System.out.println("Enter card number: ");
+                String cardNumber = sc.nextLine();
+                System.out.println("Enter holder's name: ");
+                String holder = sc.nextLine();
+                System.out.println("Enter expiration date: ");
+                String expirationDate = sc.nextLine();
+                System.out.println("Enter CCV: ");
+                String ccv = sc.nextLine();
+
+                if (!processor.validateCreditCardPayment(cardNumber, holder, expirationDate, ccv)) {
+                    System.out.println("Invalid card details. Card Number must be 16 symbols, CCV is 3 symbols. All fields are required.");
+                    System.out.println();
+                    return;
+                }
+
+                try {
+                    processor.addPaymentMethod(cardNumber, ccv);
+                    System.out.println("Credit card " + cardNumber + " is successfully added to the system!");
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                    System.out.println();
+                }
+                break;
+            case "paypal":
+                System.out.println("Enter PayPal account's email: ");
+                String email = sc.nextLine();
+                System.out.println("Enter PayPal account's password: ");
+                String password = sc.nextLine();
+
+                if (!processor.validatePayPalPayment(email, password)) {
+                    System.out.println("Invalid PayPal credentials. Email or password can't be empty!");
+                    System.out.println();
+                    return;
+                }
+
+                try {
+                    processor.addPaymentMethod(email, password);
+                    System.out.println("PayPal account " + email + " is successfully added to the system!");
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                    System.out.println();
+                }
+                break;
+            default:
+                System.out.println("Invalid payment method!");
+                System.out.println();
+        }
+    }
+
+
+    /**
+     * Prompts the user to remove a payment method from the payment processor.
+     */
+    public static void removePaymentMethod(Scanner sc, PaymentProcessor processor) {
+        if (processor.checkForPaymentMethods()) {
+            System.out.println("There are no payment methods added to the system!");
+            System.out.println();
+            return;
+        }
+
+        try {
+            System.out.println("Enter the key of the payment method you want to remove (Credit card number or PayPal email):");
+            String paymentMethodKey = sc.nextLine();
+
+            processor.removePaymentMethod(paymentMethodKey);
+            System.out.println("Payment method with credential " + paymentMethodKey + " is removed successfully!");
+        } catch (NoSuchElementException e) {
+            System.out.println(e.getMessage());
+            System.out.println();
+        }
+    }
+
+    /**
+     * Prompts the user to list all payment methods in the payment processor.
+     */
+    public static void listPaymentMethods(PaymentProcessor processor) {
+        if (processor.checkForPaymentMethods()) {
+            System.out.println("There are no payment methods added to the system!");
+            System.out.println();
+            return;
+        }
+
+        processor.displayPaymentMethods();
+    }
+
+    /**
      * Prompts the user to process an order.
      */
-    public static void processOrder(Scanner sc, InventoryManager manager) {
+    public static void processOrder(Scanner sc, InventoryManager manager, PaymentProcessor processor) {
         if (manager.checkForOrders()) {
+            return;
+        }
+
+        if (processor.checkForPaymentMethods()) {
+            System.out.println("There are no payment methods added to the system! Add at least one to process an order!");
+            System.out.println();
             return;
         }
 
         try {
             System.out.println("Enter the ID of the order you want to process:");
             int orderId = Integer.parseInt(sc.nextLine());
+
+            if (manager.getOrderById(orderId) == null) {
+                System.out.println("Order with ID " + orderId + " doesn't exist!");
+                System.out.println();
+                return;
+            }
 
             System.out.println("Enter payment amount: ");
             double amount = Double.parseDouble(sc.nextLine());
@@ -313,12 +433,31 @@ public class Main {
                 return;
             }
 
-            System.out.println("Enter payment method: ");
-            String method = sc.nextLine();
+            System.out.println("Enter payment method (Credit Card or PayPal): ");
+            String method = sc.nextLine().trim().toLowerCase();
 
-            Payment payment = new Payment(amount, method);
+            System.out.println("Enter payment key (Card number or PayPal email): ");
+            String methodKey = sc.nextLine();
 
-            manager.processOrder(orderId, payment);
+            System.out.println("Enter payment credential (Card CCV or PayPal password): ");
+            String methodCredential = sc.nextLine();
+
+            switch (method) {
+                case "credit card":
+                    processor.processCreditCardPayment(amount, methodKey, methodCredential);
+                    break;
+                case "paypal":
+                    processor.processPayPalPayment(amount, methodKey, methodCredential);
+                    break;
+                default:
+                    System.out.println("Invalid payment method!");
+                    System.out.println();
+                    return;
+            }
+
+            manager.processOrder(orderId, amount);
+
+
         } catch (NoSuchElementException | IllegalArgumentException e) {
             System.out.println(e.getMessage());
             System.out.println();
@@ -328,7 +467,7 @@ public class Main {
     /**
      * Prompts the user to save the inventory to a file.
      */
-    private static void saveInventory(Scanner sc, InventoryManager manager) {
+    public static void saveInventory(Scanner sc, InventoryManager manager) {
         try {
             System.out.print("Enter file name to save inventory (e.g., inventory.ser): ");
             String filename = sc.nextLine();
@@ -344,7 +483,7 @@ public class Main {
     /**
      * Prompts the user to load the inventory from a file.
      */
-    private static void loadInventory(Scanner sc, InventoryManager manager) {
+    public static void loadInventory(Scanner sc, InventoryManager manager) {
         try {
             System.out.print("Enter file name to load inventory (e.g., inventory.ser): ");
             String filename = sc.nextLine();

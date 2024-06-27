@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 /**
  * Class representing the payment processor which handles all payments made.
@@ -18,8 +19,16 @@ public class PaymentProcessor implements CreditCardPayment, PayPalPayment {
      * Checks if a payment method is already in the system
      * @param key The key with which the payment method is associated.
      */
-    private boolean checkIfPaymentMethodExists(String key) {
+    public boolean checkIfPaymentMethodExists(String key) {
         return this.paymentMethods.containsKey(key);
+    }
+
+    /**
+     * Checks if the collection of payment methods is empty.
+     * @return True if the collection is empty and false otherwise.
+     */
+    public boolean checkForPaymentMethods() {
+        return this.paymentMethods.isEmpty();
     }
 
     /**
@@ -30,7 +39,7 @@ public class PaymentProcessor implements CreditCardPayment, PayPalPayment {
      */
     public void addPaymentMethod (String key, String value) {
         if (this.checkIfPaymentMethodExists(key)) {
-            throw new IllegalArgumentException("Card is already added to the system!");
+            throw new IllegalArgumentException("Payment method is already in the system!");
         }
 
         this.paymentMethods.put(key, value);
@@ -43,7 +52,7 @@ public class PaymentProcessor implements CreditCardPayment, PayPalPayment {
      */
     public void removePaymentMethod(String key) {
         if (!this.checkIfPaymentMethodExists(key)) {
-            throw new IllegalArgumentException("Payment not found in the system!");
+            throw new NoSuchElementException("Payment not found in the system!");
         }
 
         this.paymentMethods.remove(key);
@@ -54,45 +63,11 @@ public class PaymentProcessor implements CreditCardPayment, PayPalPayment {
      */
     public void displayPaymentMethods() {
         System.out.println("List of payment methods:");
-        if (this.paymentMethods.isEmpty()) {
-            System.out.println("  No payment methods!");
-            return;
-        }
 
         for (var method : this.paymentMethods.entrySet()) {
             System.out.println("  " + method.getKey());
         }
     }
-
-//    public void addCreditCard(String cardNumber, String holder, String expiryDate, String cvv) {
-//        if (!validateCreditCardPayment(cardNumber, holder, expiryDate, cvv)) {
-//            throw new IllegalArgumentException("Invalid card details. Card Number must be 16 symbols, CCV is 3 symbols. All fields are required.");
-//        }
-//
-//        if (this.checkIfPaymentMethodExists(cardNumber)) {
-//            throw new IllegalArgumentException("Card is already added to the system!");
-//        }
-//
-//        this.paymentMethods.put(cardNumber, cvv);
-//
-//        System.out.println("Card with number " + cardNumber + " is successfully added to the system.");
-//        System.out.println();
-//    }
-
-//    public void addPayPal(String email, String password) {
-//        if (!validatePayPalPayment(email, password)) {
-//            throw new IllegalArgumentException("Invalid PayPal credentials. Email or password can't be empty!");
-//        }
-//
-//        if (this.checkIfPaymentMethodExists(email)) {
-//            throw new IllegalArgumentException("PayPal account is already added to the system!");
-//        }
-//
-//        this.paymentMethods.put(email, password);
-//
-//        System.out.println("PayPal account " + email + " is successfully added to the system.");
-//        System.out.println();
-//    }
 
     /**
      * Processes the payment with a credit card.

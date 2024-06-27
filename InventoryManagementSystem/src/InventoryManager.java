@@ -168,7 +168,7 @@ public class InventoryManager {
      */
     public void createOrder(HashMap<Integer, Integer> itemsToOrder) {
 
-        Order order = new Order(nextOrderID++, new Date(), itemsToOrder, null);
+        Order order = new Order(nextOrderID++, new Date(), itemsToOrder);
 
         for (HashMap.Entry<Integer, Integer> entry : itemsToOrder.entrySet()) {
             int itemID = entry.getKey();
@@ -218,30 +218,22 @@ public class InventoryManager {
     }
 
     /**
-     * Process an order with the specified ID and payment.
+     * Process an order with the specified ID.
      * @throws IllegalArgumentException if the payment is null or insufficient.
      * @throws NoSuchElementException it there isn't an order with the provided ID.
      * Removes the order from the list of orders.
      * @param orderId The ID of the order we want to process.
-     * @param payment The payment associated with the order.
      */
-    public void processOrder(int orderId, Payment payment) {
-        if (payment == null) {
-            throw new IllegalArgumentException("Order can't be processed without a payment!");
-        }
+    public void processOrder(int orderId, double paymentAmount) {
         Order order = getOrderById(orderId);
-
-        if (order == null) {
-            throw new NoSuchElementException("Order with ID " + orderId + " doesn't exist!");
-        }
 
         double total = order.calculateOrderTotal(inventoryItems);
 
-        if (payment.getAmount() < total) {
-            throw new IllegalArgumentException("Insufficient payment. The total of the order is " + total + " and payment amount is " + payment.getAmount());
+        if (paymentAmount < total) {
+            throw new IllegalArgumentException("Insufficient payment. The total of the order is " + total + " and payment amount is " + paymentAmount);
         }
 
-        System.out.println("Order with ID " + orderId + " and total: " + total + " was successfully processed and paid by " + payment.getPaymentMethod());
+        System.out.println("Order with ID " + orderId + " and total " + total + " was successfully processed ");
         System.out.println();
 
         orders.remove(order);
