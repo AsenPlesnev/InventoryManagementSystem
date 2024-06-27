@@ -15,7 +15,7 @@ public class Main {
         InventoryManager inventoryManager = new InventoryManager();
         PaymentProcessor paymentProcessor = new PaymentProcessor();
 
-        System.out.println("Welcome to the Inventory Management System");
+        System.out.println("Welcome to the E-commerce Console Application!");
 
         boolean isRunning = true;
 
